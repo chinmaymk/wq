@@ -1,26 +1,31 @@
 wq
 ==
 
-hacker's task list
+hacker's task manager
 
 
 ns - new swimlane
+	ns [,swimlane name]
 nt - new task -
-	nt <swimlaneid> <actual task>
-	nt <swimlaneid> <actual task> -i
+	nt swimlaneid [,task name]
 
-dn <swimlaneid> {taskid expression}
-mv {taskid expression} <swimlanid>
+Toggles done state of task
+dn swimlaneid {taskid expression}
 
-delt <swimlaneid> {taskid expression}
+Moves task from swimlane to another
+mv swimlaneid {taskid expression} swimlaneid
+
+Delete a task
+delt swimlaneid {taskid expression}
+
+Delete a swimlane - including tasks will be deleted as well
 dels smimlaneid
 
-eds <swimlaneid> <name>
-edt <swimlaneid> <taskid> <name>
+Edit swimlane
+eds swimlaneid [,name]
 
+Edit a task
+edt swimlaneid taskid [,name]
 
+Get help
 help
-clear
-exp 
-	dn
-	today
