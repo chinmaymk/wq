@@ -1,72 +1,61 @@
-<!DOCTYPE html>
-<html>
+<html ng-app>
+<head>
+	<title>Work Queue</title>
+	<link rel="stylesheet" href="styles/site.css">
+</head>
+<body ng-controller="MainController" ng-keydown='keyPressed($event)'>
+	<div class="container">
+		<table class='wq-list'>
+			<tr>
+				<td ng-repeat="lane in swimlanes" class='wq-panel'>
+					<div class='wq-panel-header' ng-class="{true : 'selected', false : ''}[lane.selected]">
+						{{$index}}.{{lane.name}}
+					</div>
+					<div class='wq-list'>
+						<div ng-repeat="task in lane.tasks" class="{{task.state}} {{task.important}}">
+							{{$index}}.{{task.name}}
+						</div>
+					</div>
+				</td>
+			</tr>
+		</table>
+		<div class='prompt'>
+			<span ng-show='err' style='color:red'>{{err}}</span>
+			<span ng-show='!keySequence && !err'>type help for entire command list</span>
+			{{keySequence}}
+			<span class='cursor'>&nbsp</span>
+		</div>
+	</div>
 
-  <head>
-    <meta charset='utf-8' />
-    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
-    <meta name="description" content="Wq : hacker&#39;s task list" />
-
-    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
-
-    <title>Wq</title>
-  </head>
-
-  <body>
-
-    <!-- HEADER -->
-    <div id="header_wrap" class="outer">
-        <header class="inner">
-          <a id="forkme_banner" href="https://github.com/chinmaymk/wq">View on GitHub</a>
-
-          <h1 id="project_title">Wq</h1>
-          <h2 id="project_tagline">hacker&#39;s task list</h2>
-
-            <section id="downloads">
-              <a class="zip_download_link" href="https://github.com/chinmaymk/wq/zipball/master">Download this project as a .zip file</a>
-              <a class="tar_download_link" href="https://github.com/chinmaymk/wq/tarball/master">Download this project as a tar.gz file</a>
-            </section>
-        </header>
-    </div>
-
-    <!-- MAIN CONTENT -->
-    <div id="main_content_wrap" class="outer">
-      <section id="main_content" class="inner">
-        <h1>
-<a name="wq" class="anchor" href="#wq"><span class="octicon octicon-link"></span></a>wq</h1>
-
-<p>hacker's task list</p>
-
-<p>ns - new swimlane
-nt - new task -
-    nt 
-    nt  -i</p>
-
-<p>dn  {taskid expression}
-mv {taskid expression} </p>
-
-<p>delt  {taskid expression}
-dels smimlaneid</p>
-
-<p>eds 
-edt </p>
-
-<p>help
-clear
-exp 
-    dn
-    today</p>
-      </section>
-    </div>
-
-    <!-- FOOTER  -->
-    <div id="footer_wrap" class="outer">
-      <footer class="inner">
-        <p class="copyright">Wq maintained by <a href="https://github.com/chinmaymk">chinmaymk</a></p>
-        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
-      </footer>
-    </div>
-
-    
-
-  </body>
+	<div class='help-modal' ng-show='help'>
+		<h3>What is this ?</h3>
+		<p>
+			task manager for hackers, simple and elegant. If you're tired of touching mouse again and again for managing your tasks, then this is for you.
+		</p>
+		<h3>Commands</h3>
+		<div>
+			<p>Create</p>
+			<div>ns - new swimlane</div>
+			<div>ns [,swimlane name]</div>
+			<div>nt - new task</div>
+			<div>nt swimlaneid [,task name]</div>
+			<p>Update</p>
+			<div>dn  [,swimlaneid] {taskid expression}</div>
+			<div>mv {taskid expression} swimlaneid</div>
+			<div>eds  swimlaneid [,name]</div>
+			<div>edt  swimlaneid taskid  [,name]</div>
+			<p>Delete</p>
+			<div>delt swimlaneid {taskid expression}</div>
+			<div>dels smimlaneid</div>
+			<p>and Read on the page</p>
+			<div>Allowed expressions for tasks</div>
+			<div>1-5 cosiders tasks from #1 to #5</div>
+			<div>1,5,4 cosiders tasks #1, #5, #4</div>
+		</div>
+		<p>type x to close this</p>
+	</div>
+	<script src="scripts/libs/jquery-2.0.min.js"></script>
+	<script src="scripts/libs/angular.min.js"></script>
+	<script src="scripts/app.js"></script>
+</body>
 </html>
