@@ -1,0 +1,73 @@
+body {
+	font-family: "courier new";
+	font-size: 1.5em;
+}
+
+.container {
+	padding-top: 18px;
+}
+
+.wq-table {
+	max-width: 100%;
+	background-color: transparent;
+	border-collapse: separate;
+	border-spacing: 2px;
+}
+.wq-panel {
+	border: 1px solid silver;
+	border-radius: 5px;
+	min-width: 300px;
+	max-width: 300px;
+	padding:0px !important;
+	margin-left: 5px;
+	min-height: 500px;
+	vertical-align: top;
+}
+
+.wq-list {
+	padding: 0px;
+}
+
+.wq-panel-header {
+	font-weight: bold;
+	padding: 5px;
+	background-color: gainsboro;
+}
+
+.selected {
+	color:blue;
+}
+
+.done {
+	text-decoration: line-through;
+	color : #d5d5d5;
+}
+
+.hover-hand {
+	cursor: pointer;
+}
+
+.prompt {
+	position: fixed;
+	top:0;
+	right:5;
+}
+
+/*blinking cursor*/
+
+@-webkit-keyframes blink {
+    from, to { border-color: transparent }
+    50% { border-color: black }
+}
+
+@-moz-keyframes blink {
+    from, to { border-color: transparent }
+    50% { border-color: black }
+}
+
+.cursor {
+    border-bottom:1px solid black;
+    -webkit-animation: 1s blink step-end infinite;
+    -moz-animation: 1s blink step-end infinite;
+}
+

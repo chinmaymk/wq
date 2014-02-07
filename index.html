@@ -1,0 +1,32 @@
+<html ng-app>
+<head>
+	<title>Work Queue</title>
+	<link rel="stylesheet" href="styles/site.css">
+</head>
+<body ng-controller="MainController" ng-keydown='keyPressed($event)'>
+	<div class="container">
+		<table class='wq-list'>
+			<tr>
+				<td ng-repeat="lane in swimlanes" class='wq-panel'>
+					<div class='wq-panel-header' ng-class="{true : 'selected', false : ''}[lane.selected]">
+						{{lane.name}}
+					</div>
+					<div class='wq-list'>
+						<div ng-repeat="task in lane.tasks" ng-class="task.state">
+							{{task.name}}
+						</div>
+					</div>
+				</td>
+			</tr>
+		</table>
+		<div class='prompt'>
+			<span ng-show='!keySequence'>type help for entire command list</span>
+			{{keySequence}}
+			<span class='cursor'>&nbsp</span>
+		</div>
+	</div>
+	<script src="scripts/libs/jquery-2.0.min.js"></script>
+	<script src="scripts/libs/angular.min.js"></script>
+	<script src="scripts/app.js"></script>
+</body>
+</html>
