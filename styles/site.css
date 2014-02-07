@@ -1,6 +1,5 @@
 body {
 	font-family: "courier new";
-	font-size: 1.5em;
 }
 
 .container {
@@ -43,6 +42,10 @@ body {
 	color : #d5d5d5;
 }
 
+.important {
+	color: red;
+}
+
 .hover-hand {
 	cursor: pointer;
 }
@@ -69,5 +72,18 @@ body {
     border-bottom:1px solid black;
     -webkit-animation: 1s blink step-end infinite;
     -moz-animation: 1s blink step-end infinite;
+}
+
+.help-modal {
+	background: white;
+	height: 650px;
+	width: 400px;
+	position: fixed;
+	top : 50px;
+	right: 25%;
+	z-index: 100;
+	margin: 0 auto;
+	border: 1px solid silver;
+	padding:10px;
 }
 

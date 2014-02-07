@@ -9,21 +9,50 @@
 			<tr>
 				<td ng-repeat="lane in swimlanes" class='wq-panel'>
 					<div class='wq-panel-header' ng-class="{true : 'selected', false : ''}[lane.selected]">
-						{{lane.name}}
+						{{$index}}.{{lane.name}}
 					</div>
 					<div class='wq-list'>
-						<div ng-repeat="task in lane.tasks" ng-class="task.state">
-							{{task.name}}
+						<div ng-repeat="task in lane.tasks" class="{{task.state}} {{task.important}}">
+							{{$index}}.{{task.name}}
 						</div>
 					</div>
 				</td>
 			</tr>
 		</table>
 		<div class='prompt'>
-			<span ng-show='!keySequence'>type help for entire command list</span>
+			<span ng-show='err' style='color:red'>{{err}}</span>
+			<span ng-show='!keySequence && !err'>type help for entire command list</span>
 			{{keySequence}}
 			<span class='cursor'>&nbsp</span>
 		</div>
+	</div>
+
+	<div class='help-modal' ng-show='help'>
+		<h3>What is this ?</h3>
+		<p>
+			task manager for hackers, simple and elegant. If you're tired of touching mouse again and again for managing your tasks, then this is for you.
+		</p>
+		<h3>Commands</h3>
+		<div>
+			<p>Create</p>
+			<div>ns - new swimlane</div>
+			<div>ns [,swimlane name]</div>
+			<div>nt - new task</div>
+			<div>nt swimlaneid [,task name]</div>
+			<p>Update</p>
+			<div>dn  [,swimlaneid] {taskid expression}</div>
+			<div>mv {taskid expression} swimlaneid</div>
+			<div>eds  swimlaneid [,name]</div>
+			<div>edt  swimlaneid taskid  [,name]</div>
+			<p>Delete</p>
+			<div>delt swimlaneid {taskid expression}</div>
+			<div>dels smimlaneid</div>
+			<p>and Read on the page</p>
+			<div>Allowed expressions for tasks</div>
+			<div>1-5 cosiders tasks from #1 to #5</div>
+			<div>1,5,4 cosiders tasks #1, #5, #4</div>
+		</div>
+		<p>type x to close this</p>
 	</div>
 	<script src="scripts/libs/jquery-2.0.min.js"></script>
 	<script src="scripts/libs/angular.min.js"></script>

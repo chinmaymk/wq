@@ -1,145 +1,291 @@
-
 /**
- * Stupid angular doesn't block this event
+ * Stupid angularjs doesn't block this event
  * @param  {[type]} e [description]
  * @return {[type]}   [description]
  */
-$($(document).keydown(function (e) {
-  if (e.which === 8) {
-    //your custom action here
-    return false;
-  }
+$($(document).keydown(function(e) {
+	if (e.which === 8) {
+		//your custom action here
+		return false;
+	}
 }));
 
-function MainController($scope) {
-	$scope.swimlanes = window.localStorage.getItem('wq') || [];
-	if($scope.swimlanes.length !== 0) {
-		$scope.swimlanes = JSON.parse($scope.swimlanes);
-	}
+/**
+ * Just one controller no need of fancy angular.module syntax
+ * @param {object} $scope
+ */
+function MainController($scope, $parse) {
+	$scope.swimlanes = []
 	$scope.keySequence = '';
-	var laneSelected = false;
-	var taskSelected = false;
+	$scope.err = '';
+	var allCommands = [];
+	var counter = 0;
 
-	$scope.addSwimlane = function () {
-
-		var name = prompt("Give your new swimlane a name", "work");
-		if(!name) {
-			alert("Nah, empty string won't work, try again");
-			return;
-		}
-
-		var newLane = {
-			name : name,
-			tasks : []
-		}
-		 
-		//Beat this :D
-		if(!!!getSwimlane($scope.swimlaneName)) {
-			$scope.swimlanes.push(newLane);
+	/**
+	 * Restores state or creates new one
+	 * @return {[type]} [description]
+	 */
+	function boot() {
+		var lanes = window.localStorage.getItem('wq') || [];
+		if (lanes.length !== 0) {
+			$scope.swimlanes = JSON.parse(lanes);
 		}
 	}
 
-	$scope.addTask = function() {
-		if(!laneSelected) {
-			alert('select a swimlane to add task');
-			return;
-		}
+	/**
+	 * Main command map, delegates responsibilities to respective functions
+	 * @type {Object}
+	 */
+	var commandMap = {
+		'ns': newSwimlane,
+		'nt': newTask,
+		'dn': toggleTask,
+		'mv': 'mv',
+		'delt': deleteTask,
+		'dels': deleteSwimlane,
+		'eds': editSwimlane,
+		'edt': editTask,
+		'help': showHelp,
+		'x': closeHelp,
+		'clean': 'clean',
+		'exp': 'exp'
+	};
 
-		var name = prompt("So you wanna add a task ?", "this is so awesome");
-		if(!name) {
-			alert("Nah, empty string won't work, try again");
-			return;
-		}
 
-		var lane = getSelectedLane();
-		lane.tasks.push({name: name});
+	function showHelp() {
+		$scope.help = true;
 	}
 
-	function getSelectedLane() {
-		return $scope.swimlanes.filter(function(d) {
-			return d.selected;
-		})[0]
+	function closeHelp() {
+		$scope.help = false;
 	}
 
-	function getSwimlane(name) {
-		return $scope.swimlanes.filter(function(d){
-			d.name === name;
-		})[0];
+	/**
+	 * changes the name of a swimlane
+	 * @param  {[type]} cmd [description]
+	 * @return {[type]}     [description]
+	 */
+	function editSwimlane(cmd) {
+		var laneId = makeInt(cmd.args.shift());
+		var name = cmd.args.join(" ") || promptForText("Give me a new name", $scope.swimlanes[laneId].name);
+		$scope.swimlanes[laneId].name = name;
 	}
 
-	$scope.removeSwimlane = function () {
-		var self = this;
-		$scope.swimlanes = $scope.swimlanes.filter(function(d) {
-			return d.name !== self.lane.name;
+	/**
+	 * Edit a task
+	 * @param  {object} cmd [description]
+	 * @return {[type]}     [description]
+	 */
+	function editTask(cmd) {
+		var laneId = makeInt(cmd.args.shift());
+		var taskId = makeInt(cmd.args.shift());
+		var name = cmd.args.join(" ") || promptForText("Give me a new name", $scope.swimlanes[laneId].tasks[taskId].name);
+		$scope.swimlanes[laneId].tasks[taskId].name = name;
+	}
+
+	/**
+	 * Removes a task
+	 * @param  {[type]} cmd [description]
+	 * @return {[type]}     [description]
+	 */
+	function deleteTask(cmd) {
+		var laneId = makeInt(cmd.args.shift());
+		var taskId = makeInt(cmd.args.shift());
+		$scope.swimlanes[laneId].tasks = $scope.swimlanes[laneId].tasks.splice(taskId, 1);
+	}
+
+	/**
+	 * toggles the state of task from done to normal
+	 * @param  {[type]} cmd [description]
+	 * @return {[type]}     [description]
+	 */
+	function toggleTask(cmd) {
+		var laneId = getSwimlaneId(cmd);
+		var taskIdExp = cmd.args.shift();
+		parseTaskIdExpression(taskIdExp).forEach(function(d) {
+			$scope.swimlanes[laneId].tasks[d].state = $scope.swimlanes[laneId].tasks[d].state === 'done' ? '' : 'done';
+		})
+	}
+
+	/**
+	 * Add a new swimlane
+	 * @param  {object} cmd
+	 * @return {[type]}     [description]
+	 */
+	function newSwimlane(cmd) {
+		var name = cmd.args.join(" ") || promptForText("Give your new swimlane a name", "work");
+		$scope.swimlanes.push({
+			name: name,
+			tasks: []
 		});
 	}
 
+	/**
+	 * Creates a new task
+	 * @param  {object}  cmd         [description]
+	 * @param  {Boolean} isImportant [description]
+	 * @return {[type]}              [description]
+	 */
+	function newTask(cmd) {
+		var laneId = getSwimlaneId(cmd);
+		var name = cmd.args.join(" ") || promptForText("So you wanna add a task ?", "this is so awesome");
+		$scope.swimlanes[laneId].tasks.push({
+			name: name,
+			important: cmd.args.indexOf("-i") != -1 ? 'important' : ''
+		});
+	}
+
+	/**
+	 * deletes a swimlane
+	 * @param  {[type]} id [description]
+	 * @return {[type]}    [description]
+	 */
+	function deleteSwimlane(cmd) {
+		var id = makeInt(cmd.args.shift());
+		$scope.swimlanes = $scope.swimlanes.splice(id, 1);
+	}
+
+	/**
+	 * Primary interface for keypress event throughout the window
+	 * @param  {[type]} ev [description]
+	 * @return {[type]}    [description]
+	 */
 	$scope.keyPressed = function(ev) {
-		//if backspace
-		if(ev.which === 8) {
-			$scope.keySequence = $scope.keySequence.substring(0, $scope.keySequence.length - 1)
-			return;
+
+		switch (ev.which) {
+			case 8: //if backspace
+				$scope.keySequence = $scope.keySequence.substring(0, $scope.keySequence.length - 1)
+				return;
+
+			case 27: //if esc clear sequence
+				$scope.keySequence = '';
+				return;
+
+			case 38: //Up arrow
+				$scope.keySequence = allCommands[counter++ % allCommands.length];
+				return
+
+			case 40: //Down arrow
+				$scope.keySequence = allCommands[--counter % allCommands.length];
+				return
+
+			case 13: //its enter, time to execute stuff
+				executeCommand();
+				allCommands.push($scope.keySequence);
+				$scope.keySequence = '';
+				return;
+
+			case 37: //left 
+			case 39: //right keys, return by default
+				return;
 		}
-		//if esc clear sequence
-		if(ev.which === 27) {
-			$scope.keySequence = '';
-			return;
-		}
-		//its enter, terminate the sequence
-		if(ev.which === 13) {
-			handleKeyPress();
-			$scope.keySequence = '';	
-			return
-		}
-		// else form a number to parse
-		$scope.keySequence += String.fromCharCode(ev.which).toLowerCase();
-		console.log(ev.which, $scope.keySequence);
+		//not any of above ? needs to added as sequence
+		$scope.keySequence += getCharacter(ev);
+		//clear previous errors if any;
+		$scope.err = '';
 	}
 
-	function handleKeyPress() {
-		switch($scope.keySequence.toLowerCase()) {
-			case 'ns' : 
-				$scope.addSwimlane()
-				return;
-				break;
-
-			case 'nt' : 
-				$scope.addTask();
-				return;
-				break;
-
-			case 'cls' : 
-				laneSelected = false;
-				taskSelected = false;
-				$scope.swimlanes.forEach(function(d) {
-					d.selected = false;
-					d.tasks.forEach(function(e) {
-						e.state = '';
-					});
-				});
-				return;
-				break;
-
-			default: 
-				console.log('no implementation for', $scope.keySequence);
-				break;
-		}
-
-		var number = parseInt($scope.keySequence, 10);
-		console.log(number);
-
-		if(!!number && !laneSelected && (number - 1 < $scope.swimlanes.length)) {
-			var number = parseInt($scope.keySequence, 10);
-			laneSelected = true;
-			$scope.swimlanes[number - 1].selected = true;
-		} else if(!!number && laneSelected && (number - 1 < getSelectedLane().tasks.length)) {
-				getSelectedLane().tasks[number - 1].state = 'selected';
-		}
-
-		return false;
+	function getCharacter(ev) {
+		if (ev.which === 188) return ",";
+		if (ev.which === 189) return "-";
+		return String.fromCharCode(ev.keyCode || ev.which).toLowerCase();
 	}
 
+	/**
+	 * Main magic
+	 * @return {[type]} [description]
+	 */
+	function executeCommand() {
+		var cmdObj = parseCommand();
+		if (commandMap[cmdObj.cmd]) {
+			try {
+				commandMap[cmdObj.cmd](cmdObj);
+			} catch (e) {
+				$scope.err = e.message;
+				throw e;
+			}
+		} else {
+			$scope.err = "No such commnad " + $scope.keySequence;
+		}
+	}
+
+	/**
+	 * extracts commands and arguments from input string
+	 * @return {[type]} [description]
+	 */
+	function parseCommand() {
+		var commands = $scope.keySequence.trim().split(" ");
+		return {
+			cmd: commands.shift(),
+			args: commands.map(function(d) {
+				return d.trim();
+			})
+		};
+	}
+
+	/**
+	 * Helper function for string to int conversion
+	 * @param  {string} number [description]
+	 * @return {[type]}        [description]
+	 */
+	function makeInt(number) {
+		if (isNaN(parseInt(number, 10))) {
+			throw new Error("invalid number entered");
+		}
+		return parseInt(number, 10);
+	}
+
+	function getSwimlaneId(cmd) {
+		var laneId = makeInt(cmd.args.shift());
+		return laneId;
+	}
+
+	function promptForText(title, defaultVal) {
+		var name = prompt(title, defaultVal);
+		if (!name) {
+			throw new Error("Nah, empty string won't work, try again")
+		}
+		return name;
+	}
+
+	/**
+	 * converts 1,2,3 and 1-3 to [1 2 3]
+	 * Don't change the sequence, its crucial
+	 * @param  {[type]} exp [description]
+	 * @return {[type]}     [description]
+	 */
+	function parseTaskIdExpression(exp) {
+		var taskIds = [];
+		var sep = '';
+		//comma seperated values
+		if (exp.indexOf(",") !== -1) {
+			sep = ',';
+		}
+
+		//range expression
+		if (exp.indexOf("-") !== -1) {
+			if (exp.split("-").length !== 2) {
+				throw new Error("invalid range expression");
+			}
+			var temp = [];
+			for (var i = makeInt(exp.split("-")[0]); i <= makeInt(exp.split("-")[1]); i++) {
+				temp.push(i);
+			};
+			exp = temp.join(",");
+			sep = ',';
+		}
+
+		exp.split(sep).forEach(function(d) {
+			taskIds.push(makeInt(d));
+		});
+		return taskIds;
+	}
+
+	//save immedietly as the object changes
 	$scope.$watch('swimlanes', function() {
-		window.localStorage.setItem('wq', JSON.stringify($scope.swimlanes));
-	}, true)
+		window.localStorage.setItem('wq', angular.toJson($scope.swimlanes));
+	}, true);
+
+	//load old things
+	boot();
 }
