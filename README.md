@@ -61,6 +61,15 @@ edt swimlaneid taskid [,name]
 help
 ```
 
+####What's swimlaneid and taskid ?
+Each task and swimlane will be given an ID by default. In the picture above you should see 0.learn wq => 0 is the swimlaneid in this case. And taskid is nothing but the number present in front of task.
+
+####What's {taskid expression} ?
+To make things easy, you can do batch operations using some commands. you can do following instead of taskid
+```javascript
+dn 0 1-5 // toggles tasks from #1 to #5 in swimlane #0
+dn 0 1,2,5 // toggles tasks from #1,#2, #5 in swimlane #0
+```
 **Don't forget to press return after you've entered these commands!**
 
 ##License
