@@ -6,7 +6,7 @@ hacker's task manager
 ##What is this ?
 A task manager meant for hackers, you can add/edit/delete tasks with this tool. This is an entirely browser based app, no server communication whatsoever.
 
-![hackers's task manager](img/wq.png)
+![hackers's task manager](https://raw2.github.com/chinmaymk/wq/master/img/wq.PNG)
 
 ##Why ?
 I was tired of traditional task managers asking me to touch the mouse again and again. I wanted a task manager that could fit in hacker workflow. So I created wq.
