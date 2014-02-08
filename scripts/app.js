@@ -40,7 +40,7 @@ function MainController($scope, $parse) {
 		'ns': newSwimlane,
 		'nt': newTask,
 		'dn': toggleTask,
-		'mv': 'mv',
+		'mv': moveTasks,
 		'delt': deleteTask,
 		'dels': deleteSwimlane,
 		'eds': editSwimlane,
@@ -58,6 +58,17 @@ function MainController($scope, $parse) {
 
 	function closeHelp() {
 		$scope.help = false;
+	}
+
+	function moveTasks(cmd) {
+		var laneId = getSwimlaneId(cmd);
+		var taskIdExp = cmd.args.shift();
+		var targetLaneId = getSwimlaneId(cmd);
+
+		parseTaskIdExpression(taskIdExp).forEach(function(d) {
+			var task = $scope.swimlanes[laneId].tasks.splice(d, 1);
+			$scope.swimlanes[targetLaneId].tasks.push(task[0]);
+		})
 	}
 
 	/**
@@ -91,7 +102,7 @@ function MainController($scope, $parse) {
 	function deleteTask(cmd) {
 		var laneId = makeInt(cmd.args.shift());
 		var taskId = makeInt(cmd.args.shift());
-		$scope.swimlanes[laneId].tasks = $scope.swimlanes[laneId].tasks.splice(taskId, 1);
+		$scope.swimlanes[laneId].tasks.splice(taskId, 1);
 	}
 
 	/**
