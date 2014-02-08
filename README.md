@@ -68,3 +68,6 @@ wq is published under MIT license.
 
 ##Got suggestions ?
 Feel free to submit a pull request, file an issue, or get in touch on twitter [@_chinmaymk](https://twitter.com/_chinmaymk)
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/chinmaymk/wq/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
