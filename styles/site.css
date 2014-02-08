@@ -76,11 +76,11 @@ body {
 
 .help-modal {
 	background: white;
-	height: 650px;
+	height: 700px;
 	width: 400px;
-	position: fixed;
-	top : 50px;
-	right: 25%;
+	position: absolute;
+	top : 30px;
+	right: 0px;
 	z-index: 100;
 	margin: 0 auto;
 	border: 1px solid silver;
