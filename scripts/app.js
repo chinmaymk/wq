@@ -29,6 +29,26 @@ function MainController($scope, $parse) {
 		var lanes = window.localStorage.getItem('wq') || [];
 		if (lanes.length !== 0) {
 			$scope.swimlanes = JSON.parse(lanes);
+		} else {
+			$scope.swimlanes = [{
+				"name": "learn wq - type following",
+				"tasks": [{
+					"name": "nt 0 read comments",
+					"important": ""
+				}, {
+					"name": "dn 0 1",
+					"important": ""
+				}, {
+					"name": "delt 0 2",
+					"important": ""
+				}, {
+					"name": "help",
+					"important": ""
+				}, {
+					"name": "like what you see ? head over to gihub for more!",
+					"important": ""
+				}]
+			}];
 		}
 	}
 
@@ -47,10 +67,16 @@ function MainController($scope, $parse) {
 		'edt': editTask,
 		'help': showHelp,
 		'x': closeHelp,
-		'clean': 'clean',
+		'clean': clean,
 		'exp': 'exp'
 	};
 
+	function clean() {
+		var result = confirm("This will delete everything, are you sure ?");
+		if (result) {
+			$scope.swimlanes = [];
+		}
+	}
 
 	function showHelp() {
 		$scope.help = true;
