@@ -61,6 +61,11 @@ edt swimlaneid taskid [,name]
 help
 ```
 
+####clean - Clear entire storage, this will delete EVERYTHING!
+```javascript
+clean
+```
+
 ####What's swimlaneid and taskid ?
 Each task and swimlane will be given an ID by default. In the picture above you should see 0.learn wq => 0 is the swimlaneid in this case. And taskid is nothing but the number present in front of task.
 
