@@ -49,6 +49,7 @@ function MainController($scope, $parse) {
 					"important": ""
 				}]
 			}];
+			$scope.help = true;
 		}
 	}
 
